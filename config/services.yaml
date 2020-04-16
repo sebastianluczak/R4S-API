@@ -34,3 +34,5 @@ services:
     App\DataPersister\UserDataPersister: ~
 
     App\Manager\UserManager: ~
+
+    App\Manager\HairdresserStallManager: ~

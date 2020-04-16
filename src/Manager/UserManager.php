@@ -4,12 +4,11 @@ namespace App\Manager;
 
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class UserManager
 {
-    private ObjectManager $objectManager;
+    private EntityManagerInterface $objectManager;
     private UserPasswordEncoderInterface $passwordEncoder;
 
     public function __construct(EntityManagerInterface $objectManager, UserPasswordEncoderInterface $passwordEncoder)
@@ -33,6 +32,16 @@ class UserManager
     {
         $this->objectManager->remove($user);
         $this->objectManager->flush();
+    }
+
+    public function createUser(string $email, string $password): User
+    {
+        $user = new User();
+        $user->setEmail($email);
+        $user->setPassword($this->passwordEncoder->encodePassword($user, $password));
+        $this->save($user);
+
+        return $user;
     }
 
     public function encodePlainPassword(User $user, string $plainPassword): string
