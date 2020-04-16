@@ -1,0 +1,35 @@
+version: "3.1"
+services:
+
+    mysql:
+      image: mysql:5.7
+      container_name: ready4s-mysql
+      working_dir: /application
+      volumes:
+        - .:/application
+      environment:
+        - MYSQL_ROOT_PASSWORD=ready4s_root
+        - MYSQL_DATABASE=ready4s_api
+        - MYSQL_USER=ready4s_user
+        - MYSQL_PASSWORD=ready4s_password
+      ports:
+        - "8082:3306"
+
+    webserver:
+      image: nginx:alpine
+      container_name: ready4s-webserver
+      working_dir: /application
+      volumes:
+          - .:/application
+          - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      ports:
+       - "8080:80"
+
+    php-fpm:
+      build: docker/php-fpm
+      container_name: ready4s-php-fpm
+      working_dir: /application
+      volumes:
+        - .:/application
+        - ./docker/php-fpm/php-ini-overrides.ini:/etc/php/7.4/fpm/conf.d/99-overrides.ini
+
