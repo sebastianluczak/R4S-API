@@ -5,6 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Validator\Constraint\ReservationSlotRange;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Validator\Constraint\ReservationStartDate;
 use App\Validator\Constraint\ReservationWithinWorkingHours;
@@ -12,7 +13,9 @@ use App\Validator\Constraint\ReservationWithinWorkingHours;
 /**
  * @ApiResource(
  *     collectionOperations={"get","post"},
- *     itemOperations={"get"}
+ *     itemOperations={"get"},
+ *     normalizationContext={"groups"={"read"}},
+ *     denormalizationContext={"groups"={"write"}}
  * )
  * @ORM\Entity(repositoryClass="App\Repository\ReservationRepository")
  * @ReservationStartDate
@@ -25,6 +28,8 @@ class Reservation
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     *
+     * @Groups({"read"})
      */
     private $id;
 
@@ -32,25 +37,32 @@ class Reservation
      * @ORM\ManyToOne(targetEntity="App\Entity\HairdresserStall", inversedBy="reservations")
      * @ORM\JoinColumn(nullable=false)
      * @Assert\NotBlank
+     *
+     * @Groups({"read", "write"})
      */
     private $hairdresserStall;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="reservations")
      * @ORM\JoinColumn(nullable=false)
-     * @Assert\NotBlank
+     *
+     * @Groups({"read"})
      */
     private $user;
 
     /**
      * @ORM\Column(type="datetime")
      * @Assert\Type("\DateTimeInterface")
+     *
+     * @Groups({"read", "write"})
      */
     private $startDate;
 
     /**
      * @ORM\Column(type="datetime")
      * @Assert\Type("\DateTimeInterface")
+     *
+     * @Groups({"read", "write"})
      */
     private $endDate;
 

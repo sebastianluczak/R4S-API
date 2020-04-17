@@ -3,6 +3,7 @@
 namespace App\Manager;
 
 use App\Entity\Reservation;
+use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 
 class ReservationManager
@@ -31,10 +32,10 @@ class ReservationManager
         $this->objectManager->flush();
     }
 
-    public function createReservation(): Reservation
+    public function assignUserToReservation(User $user, Reservation $reservation): Reservation
     {
-        $reservation = new Reservation();
-        // TODO
+        $reservation->setUser($user);
+
         return $reservation;
     }
 }
