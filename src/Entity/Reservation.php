@@ -3,9 +3,11 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use App\Validator\Constraint\ReservationSlotRange;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Validator\Constraint\ReservationStartDate;
+use App\Validator\Constraint\ReservationWithinWorkingHours;
 
 /**
  * @ApiResource(
@@ -14,6 +16,8 @@ use App\Validator\Constraint\ReservationStartDate;
  * )
  * @ORM\Entity(repositoryClass="App\Repository\ReservationRepository")
  * @ReservationStartDate
+ * @ReservationWithinWorkingHours
+ * @ReservationSlotRange
  */
 class Reservation
 {

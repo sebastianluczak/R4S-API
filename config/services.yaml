@@ -4,6 +4,8 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
+    hairdresser.workshift.start: '%env(HAIRDRESSER_WORKSHIFT_START)%'
+    hairdresser.workshift.end: '%env(HAIRDRESSER_WORKSHIFT_END)%'
 
 services:
     # default configuration for services in *this* file
@@ -36,3 +38,8 @@ services:
     App\Manager\UserManager: ~
 
     App\Manager\HairdresserStallManager: ~
+
+    App\Validator\Constraint\ReservationWithinWorkingHoursValidator:
+        arguments:
+            - '%hairdresser.workshift.start%'
+            - '%hairdresser.workshift.end%'
