@@ -12,5 +12,5 @@ $ docker exec -it ready4s-php-fpm bash
 # echo "$jwt_passphrase" | openssl pkey -in config/jwt/private.pem -passin stdin -out config/jwt/public.pem -pubout
 # php bin/console d:m:m
 # php bin/console d:f:l
+# php vendor/bin/simple-phpunit
 ```
-// TODO
