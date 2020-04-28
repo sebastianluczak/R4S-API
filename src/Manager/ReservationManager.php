@@ -4,15 +4,18 @@ namespace App\Manager;
 
 use App\Entity\Reservation;
 use App\Entity\User;
+use App\Repository\ReservationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 class ReservationManager
 {
     private EntityManagerInterface $objectManager;
+    private ReservationRepository $repository;
 
-    public function __construct(EntityManagerInterface $objectManager)
+    public function __construct(EntityManagerInterface $objectManager, ReservationRepository $repository)
     {
         $this->objectManager = $objectManager;
+        $this->repository = $repository;
     }
 
     public function save(Reservation $reservation, bool $flush = true): Reservation
@@ -37,5 +40,19 @@ class ReservationManager
         $reservation->setUser($user);
 
         return $reservation;
+    }
+
+    public function isReservationDateAccessible(Reservation $reservation): bool
+    {
+        $startDate = $reservation->getStartDate();
+        $endDate = $reservation->getEndDate();
+        $hairdresserStall = $reservation->getHairdresserStall();
+        $occurences = $this->repository->findBetweenDatesForHairdresserStall($startDate, $endDate, $hairdresserStall);
+
+        if (count($occurences)) {
+            return false;
+        }
+
+        return true;
     }
 }

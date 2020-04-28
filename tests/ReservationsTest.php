@@ -53,7 +53,7 @@ class ReservationsTest extends ApiTestCase
         $response = static::createClient()->request('POST', '/api/reservations', [
             'json' => [
                 'hairdresserStall' => $hairdresserStall['@id'],
-                'startDate' => "2020-04-17T08:00:00.000Z",
+                'startDate' => "2020-04-17T08:30:00.000Z",
                 'endDate' => "2020-04-17T19:30:00.000Z",
             ],
             'headers' => [
@@ -62,6 +62,69 @@ class ReservationsTest extends ApiTestCase
         ]);
 
         $this->assertResponseIsSuccessful();
+        $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
+    }
+
+    /**
+     * @depends testLogin
+     * @depends testHairdresserStallGet
+     */
+    public function testReservationOverlappingFailedCreate(string $token, array $hairdresserStall): void
+    {
+        $response = static::createClient()->request('POST', '/api/reservations', [
+            'json' => [
+                'hairdresserStall' => $hairdresserStall['@id'],
+                'startDate' => "2020-04-17T08:00:00.000Z",
+                'endDate' => "2020-04-17T09:30:00.000Z",
+            ],
+            'headers' => [
+                'Authorization' => 'Bearer '.$token
+            ]
+        ]);
+
+        $this->assertResponseStatusCodeSame(400);
+        $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
+    }
+
+    /**
+     * @depends testLogin
+     * @depends testHairdresserStallGet
+     */
+    public function testReservationTwiceFailedCreate(string $token, array $hairdresserStall): void
+    {
+        $response = static::createClient()->request('POST', '/api/reservations', [
+            'json' => [
+                'hairdresserStall' => $hairdresserStall['@id'],
+                'startDate' => "2020-04-17T08:30:00.000Z",
+                'endDate' => "2020-04-17T19:30:00.000Z",
+            ],
+            'headers' => [
+                'Authorization' => 'Bearer '.$token
+            ]
+        ]);
+
+        $this->assertResponseStatusCodeSame(400);
+        $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
+    }
+
+    /**
+     * @depends testLogin
+     * @depends testHairdresserStallGet
+     */
+    public function testReservationExceedingFailedCreate(string $token, array $hairdresserStall): void
+    {
+        $response = static::createClient()->request('POST', '/api/reservations', [
+            'json' => [
+                'hairdresserStall' => $hairdresserStall['@id'],
+                'startDate' => "2020-04-17T09:00:00.000Z",
+                'endDate' => "2020-04-17T20:00:00.000Z",
+            ],
+            'headers' => [
+                'Authorization' => 'Bearer '.$token
+            ]
+        ]);
+
+        $this->assertResponseStatusCodeSame(400);
         $this->assertResponseHeaderSame('content-type', 'application/ld+json; charset=utf-8');
     }
 

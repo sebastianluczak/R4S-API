@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Entity;
 
@@ -24,6 +25,9 @@ use App\Validator\Constraint\ReservationWithinWorkingHours;
  */
 class Reservation
 {
+    private CONST RESERVATION_PRICE = 4000;
+    const PRICE_CURRENCY = "PLN";
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -65,6 +69,19 @@ class Reservation
      * @Groups({"read", "write"})
      */
     private $endDate;
+
+    /**
+     * @ORM\Column(type="integer")
+     * @var integer
+     *
+     * @Groups({"read"})
+     */
+    private $price;
+
+    public function __construct()
+    {
+        $this->price = self::RESERVATION_PRICE;
+    }
 
     public function getId(): ?int
     {
@@ -115,6 +132,38 @@ class Reservation
     public function setEndDate(\DateTimeInterface $endDate): self
     {
         $this->endDate = $endDate;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPrice(): int
+    {
+        return $this->price;
+    }
+
+    /**
+     * @Groups("read")
+     */
+    public function getPriceTotal(): string
+    {
+        $diff = $this->getEndDate()->diff($this->getStartDate());
+        $minutes = $diff->h * 60;
+        $minutes += $diff->m;
+        $hourFloatValue = $minutes / 60.0;
+
+        return number_format($this->price * $hourFloatValue, 2) / 100 . self::PRICE_CURRENCY;
+    }
+
+    /**
+     * @param int $price
+     * @return Reservation
+     */
+    public function setPrice(int $price): self
+    {
+        $this->price = $price;
 
         return $this;
     }

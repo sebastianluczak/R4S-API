@@ -19,32 +19,20 @@ class ReservationRepository extends ServiceEntityRepository
         parent::__construct($registry, Reservation::class);
     }
 
-    // /**
-    //  * @return Reservation[] Returns an array of Reservation objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    public function findBetweenDatesForHairdresserStall(
+        ?\DateTimeInterface $startDate,
+        ?\DateTimeInterface $endDate,
+        ?\App\Entity\HairdresserStall $hairdresserStall
+    ): array
     {
-        return $this->createQueryBuilder('r')
-            ->andWhere('r.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('r.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
+        return $this->createQueryBuilder('hd')
+            ->andWhere('(:startDate BETWEEN hd.startDate AND hd.endDate) OR (:endDate BETWEEN hd.startDate AND hd.endDate)')
+            ->andWhere('hd.hairdresserStall = :hairdresserStall')
+            ->setParameters([
+                'startDate' => $startDate,
+                'endDate' => $endDate,
+                'hairdresserStall' => $hairdresserStall
+            ])
+            ->getQuery()->getResult();
     }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?Reservation
-    {
-        return $this->createQueryBuilder('r')
-            ->andWhere('r.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }

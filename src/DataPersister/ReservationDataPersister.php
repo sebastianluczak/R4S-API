@@ -5,6 +5,7 @@ namespace App\DataPersister;
 use ApiPlatform\Core\DataPersister\ContextAwareDataPersisterInterface;
 use App\Entity\Reservation;
 use App\Entity\User;
+use App\Exception\ReservationNotAccessibleDateException;
 use App\Manager\ReservationManager;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
@@ -29,6 +30,9 @@ final class ReservationDataPersister implements ContextAwareDataPersisterInterfa
     {
         /** @var Reservation $data */
         /** @var User $user */
+        if (!$this->reservationManager->isReservationDateAccessible($data)) {
+            throw new ReservationNotAccessibleDateException();
+        }
         $user = $this->tokenStorage->getToken()->getUser();
         $data = $this->reservationManager->assignUserToReservation($user, $data);
         $this->reservationManager->save($data);
